@@ -53,8 +53,6 @@ public class BookDao {
             ps.setString(3, book.getAuthor());
             ps.setDouble(4, book.getPrice());
             ps.setInt(5, book.getQuantity());
-
-
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

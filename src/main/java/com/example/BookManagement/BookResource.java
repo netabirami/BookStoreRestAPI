@@ -2,6 +2,7 @@ package com.example.BookManagement;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/books")
@@ -17,8 +18,12 @@ public class BookResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Book getBook(@PathParam("id") int id) {
-        return bookDao.getBook(id);
+    public Response getBook(@PathParam("id") int id) {
+        Book book = bookDao.getBook(id);
+        if (book== null){
+            return Response .status(Response.Status.BAD_REQUEST).entity("Book not found").build();
+        }
+        return Response.ok(book).build();
     }
 
     @POST

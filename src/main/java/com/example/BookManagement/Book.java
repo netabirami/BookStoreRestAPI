@@ -3,16 +3,16 @@ package com.example.BookManagement;
 public class Book {
     private int id;
     private String title;
-    private String author;
     private double price;
     private int quantity;
+    private Author author;
 
-    public Book(int id, String title, String author, double price, int quantity) {
+    public Book(int id, String title, double price, int quantity, Author author) {
         this.id = id;
         this.title = title;
-        this.author = author;
         this.price = price;
         this.quantity = quantity;
+        this.author = author;
     }
 
     public int getId() {
@@ -31,14 +31,6 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
     public double getPrice() {
         return price;
     }
@@ -55,6 +47,13 @@ public class Book {
         this.quantity = quantity;
     }
 
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
     public Book() {
     }
 }

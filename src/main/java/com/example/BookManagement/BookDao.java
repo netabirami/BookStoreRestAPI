@@ -9,15 +9,17 @@ public class BookDao {
         List<Book> bookList = new ArrayList<>();
         try (Connection connection = DBConnection.getConnection()) {
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM books");
+            ResultSet rs = stmt.executeQuery("SELECT b.id as bookId, b.title as title, b.price as price, b.quantity as quantity, " +
+                    "a.author_id as authorId, a.author_name as name" +
+                    " FROM books b INNER JOIN authors a on a.author_id=b.author_id");
             while (rs.next()) {
+                Author author = new Author(rs.getInt("authorId"), rs.getString("name"));
                 Book book = new Book(
-                        rs.getInt("id"),
+                        rs.getInt("bookId"),
                         rs.getString("title"),
-                        rs.getString("author"),
                         rs.getDouble("price"),
-                        rs.getInt("quantity"));
-
+                        rs.getInt("quantity"),
+                        author);
                 bookList.add(book);
             }
         } catch (SQLException e) {
@@ -28,16 +30,21 @@ public class BookDao {
 
     public Book getBook(int id) {
         try (Connection connection = DBConnection.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM books WHERE id = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT b.id as bookId, b.title as title, b.price as price, b.quantity as quantity, " +
+                    "a.id as authorId, a.name as name" +
+                    " FROM books b INNER JOIN authors a on a.id=b.author_id WHERE b.id = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
+                Author author = new Author(rs.getInt("authorId"), rs.getString("name"));
                 return new Book(
                         rs.getInt("id"),
                         rs.getString("title"),
-                        rs.getString("author"),
                         rs.getDouble("price"),
-                        rs.getInt("quantity"));
+                        rs.getInt("quantity"),
+                        author
+                );
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,12 +54,12 @@ public class BookDao {
 
     public void addBook(Book book) {
         try (Connection connection = DBConnection.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO books (id,title,author,price,quantity) VALUES (?, ?, ?,?,?)");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO books(id,title, price, quantity,author_id ) VALUES(?, ?, ?, ?,?) ");
             ps.setInt(1, book.getId());
             ps.setString(2, book.getTitle());
-            ps.setString(3, book.getAuthor());
-            ps.setDouble(4, book.getPrice());
-            ps.setInt(5, book.getQuantity());
+            ps.setDouble(3, book.getPrice());
+            ps.setInt(4, book.getQuantity());
+            ps.setInt(5, book.getAuthor().getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,12 +68,12 @@ public class BookDao {
 
     public void updateBook(int id, Book book) {
         try (Connection connection = DBConnection.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement("UPDATE books SET title = ?, author = ?, price = ? ,quantity = ? WHERE id = ?");
+            PreparedStatement ps = connection.prepareStatement("UPDATE books SET title = ?, price = ? ,quantity = ?, author_id = ? WHERE id = ?");
             ps.setInt(5, book.getId());
             ps.setString(1, book.getTitle());
-            ps.setString(2, book.getAuthor());
-            ps.setDouble(3, book.getPrice());
-            ps.setInt(4, book.getQuantity());
+            ps.setDouble(2, book.getPrice());
+            ps.setInt(3, book.getQuantity());
+            ps.setInt(4, book.getAuthor().getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
